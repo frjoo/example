@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Love Floating</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: black;
+    }
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 24px;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+<div class="text">
+  the longer I'm with you<br>
+  the more I love you
+</div>
+
+<audio autoplay loop>
+  <source src="perfect.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  let hearts = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  window.addEventListener("resize", resizeCanvas);
+  resizeCanvas();
+
+  class Heart {
+    constructor() {
+      this.reset();
+    }
+
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = canvas.height + Math.random() * canvas.height;
+      this.size = Math.random() * 20 + 10;
+      this.speedY = Math.random() * 1 + 0.5;
+      this.speedX = Math.random() * 0.5 - 0.25;
+      this.alpha = Math.random() * 0.3 + 0.6;
+      this.angle = Math.random() * Math.PI * 2;
+    }
+
+    draw() {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.scale(this.size / 20, this.size / 20);
+      ctx.rotate(this.angle);
+      ctx.globalAlpha = this.alpha;
+
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.bezierCurveTo(0, -3, -5, -15, -15, -15);
+      ctx.bezierCurveTo(-35, -15, -35, 10, -35, 10);
+      ctx.bezierCurveTo(-35, 25, -20, 40, 0, 50);
+      ctx.bezierCurveTo(20, 40, 35, 25, 35, 10);
+      ctx.bezierCurveTo(35, 10, 35, -15, 15, -15);
+      ctx.bezierCurveTo(5, -15, 0, -3, 0, 0);
+      ctx.fillStyle = "red";
+      ctx.fill();
+      ctx.restore();
+    }
+
+    update() {
+      this.y -= this.speedY;
+      this.x += this.speedX;
+      if (this.y < -50 || this.x < -50 || this.x > canvas.width + 50) {
+        this.reset();
+      }
+    }
+  }
+
+  function createHearts(count) {
+    for (let i = 0; i < count; i++) {
+      hearts.push(new Heart());
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    hearts.forEach(h => {
+      h.update();
+      h.draw();
+    });
+    requestAnimationFrame(animate);
+  }
+
+  createHearts(60);
+  animate();
+</script>
+
+</body>
+</html>
